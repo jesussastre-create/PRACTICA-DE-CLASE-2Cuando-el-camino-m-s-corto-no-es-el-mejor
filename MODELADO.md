@@ -29,3 +29,30 @@ Propiedades: $C(u,v)\ge d(u,v)>0$ (sin aristas negativas → Dijkstra válido; $
 
 ## 4. Respuesta a la pregunta eje
 Dos rutas al mismo refugio se comparan por costo acumulado $J(P)=\sum_{(u,v)\in P}C(u,v)$, no por longitud. Una ruta corta que cruza celdas de nivel 3 paga ~11.4× por paso; por ejemplo, 4 pasos por nivel 3 cuestan ≈ 45.6, mientras que un rodeo seco de 10 pasos cuesta 10. El sistema elige el rodeo. La ruta corta solo gana si el desvío cuesta más que el riesgo evitado; $\alpha$ y $\beta$ controlan ese equilibrio. Si la única ruta está bloqueada, $J=\infty$ y se reporta que no hay camino.
+
+## 5. Algoritmos de búsqueda y heurística (Módulo 2)
+- **Contrato de salida (`SearchResult`):** Estructura estándar con soporte de atributos y diccionario que expone `path: list[Node]`, `cost: float`, `nodes_explored: int` y `visited_order: list[Node]`.
+- **Dijkstra (`dijkstra`):** Búsqueda de costo uniforme ($f(n)=g(n)$) sobre `env.get_neighbors(u)`. Garantiza optimalidad dado que $C(u,v) \ge d(u,v) \ge 1 > 0$.
+- **A* (`a_star`):** Búsqueda informada ($f(n)=g(n)+h(n)$) con heurística admisible y consistente adaptada a `env.allow_diagonal`:
+  - Ortogonal (`allow_diagonal=False`): **Distancia Manhattan** $h(n,g) = \Delta r + \Delta c$.
+  - Diagonal (`allow_diagonal=True`): **Distancia Octile** $h(n,g) = \max(\Delta r, \Delta c) + (\sqrt{2}-1)\min(\Delta r, \Delta c)$ ($\ge$ Euclidiana y $\le$ costo real).
+- **Admisibilidad:** Como $1+\alpha R(v)^\beta \ge 1$ para todo $R(v)\in\{0,1,2,3\}$, se cumple $C(u,v) \ge d(u,v)$ en cada paso y $h(n) \le h^*(n)$ siempre.
+- **Manejo de bloqueos (`-1`):** Si `start` o `goal` están bloqueados (`env.is_blocked`) o el refugio está encerrado por celdas `-1`, ambos algoritmos terminan limpiamente devolviendo `path=[]` y `cost=math.inf`.
+
+## 6. Suite de escenarios de prueba y auditoría caza-errores (Módulo 3 — Andrey Lechuga)
+Se implementaron y verificaron en `modelado_terreno.ipynb` (Celdas 7–9) los **5 escenarios obligatorios** más **1 escenario adicional caza-errores**, almacenando los resultados en `ESCENARIOS_PRUEBA` y `HISTORIAL_METRICAS`:
+
+| Clave | Escenario | Costo $J(P)$ | Pasos | Nodos (Dijkstra / A*) | Resultado verificado |
+|---|---|---:|---:|---:|---|
+| `E1_Base` | 1. Ruta base disponible ($10\times 10$) | `20.00` | `18` | `89` / `44` (-50.6%) | Cruza por el puente principal `(4, 4)` con $R=1$. |
+| `E2_Bloqueo_Dinamico` | 2. Bloqueo dinámico en ruta previa | `26.00` | `18` | `66` / `48` (-27.3%) | Se bloquea `(4, 4)` (`-1`); recalcula por el desvío oriental. |
+| `E3_Inaccesible` | 3. Refugio completamente inaccesible | `inf` | `-` | `40` / `40` | Canal fila 4 cerrado por completo; retorna `path=[]` sin ciclarse. |
+| `E4A_Riesgo_Leve` | 4A. Antes: corredor central con $R=1$ | `13.00` | `9` | `42` / `14` (-66.7%) | Atraviesa el corredor central en línea recta ($13.00 < 15.00$). |
+| `E4B_Riesgo_Severo` | 4B. Después: corredor sube a $R=3$ | `15.00` | `15` | `42` / `24` (-42.9%) | Cambia de decisión y rodea por zona seca ($15.00 < 50.57$). |
+| `E5_Corto_vs_Conveniente` | 5. Camino más corto vs. más conveniente | `13.00` | `13` | `53` / `17` (-67.9%) | Descarta la ruta recta de `9` pasos ($J=71.35$) por el rodeo seco de `13` pasos ($J=13.00$, **81.8% menor costo**). |
+| `E6_Caza_Errores` | 6. Caza-errores (Relajación en vado $R=3$, asimetría y fronteras) | `14.81` | `4` | `10` / `10` | Verifica relajación tardía ortogonal `(2,1)->(2,2)` ($J=14.81$) frente al bug de visitado prematuro en diagonal `(1,1)->(2,2)` ($J=18.53$), asimetría direccional ($3.00 \neq 13.39$) y validaciones de `cost(u, v)`. |
+
+### Correcciones de integración aplicadas en Módulos 1 y 2
+1. **Validación completa en `GridEnvironment.cost(u, v)` (Módulo 1):** Se añadió validación de límites para `u` y `v` (`IndexError`), verificación de bloqueo en el nodo origen `u` (`is_blocked(*u)`), y restricción de movimientos diagonales cuando `allow_diagonal=False` (`ValueError`).
+2. **Compatibilidad extendida en `SearchResult` (Módulo 2):** Se preservó intacto `to_dict()` con las 4 llaves originales de Martín (`path`, `cost`, `nodes_explored`, `visited_order`) y se añadieron propiedades/llaves de compatibilidad (`time_ms`, `found`, `nodes_expanded`, `steps`) para integración directa con los módulos de Visualización (Módulo 4) y Documentación (Módulo 5).
+
