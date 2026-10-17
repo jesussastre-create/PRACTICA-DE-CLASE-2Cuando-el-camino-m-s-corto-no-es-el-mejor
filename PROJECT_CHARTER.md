@@ -20,7 +20,7 @@ Respuesta: compara el **costo acumulado** $\sum C(u,v)$ de cada ruta, no su long
 |---|---|
 | Jesús | Modelado del terreno, función de costo y base de datos matricial |
 | Martín | Algoritmos de búsqueda (A* y Dijkstra) y conteo de nodos explorados |
-| Lechuga | Suite de 6 pruebas (5 obligatorias + 1 caza-errores) |
+| Andrey Lechuga | Suite de 6 pruebas (5 obligatorias + 1 caza-errores) y auditoría de integración |
 | Izquierdo | Visualización en mapas de calor y gráficas comparativas |
 | Ramón | Documentación, justificaciones, IA check y control de Git |
 
@@ -33,3 +33,5 @@ Respuesta: compara el **costo acumulado** $\sum C(u,v)$ de cada ruta, no su long
 ## 6. Alcance de los módulos implementados
 - **Módulo 1 (Jesús):** `GridEnvironment` + función de costo (Celdas 1–3 de `modelado_terreno.ipynb`).
 - **Módulo 2 (Martín):** Algoritmos `dijkstra` y `a_star`, heurística admisible `heuristic`, estructura `SearchResult` con conteo exacto de `nodes_explored` y `visited_order`, y pruebas de humo de búsqueda (Celdas 4–6 de `modelado_terreno.ipynb`). Pruebas exhaustivas y visualización son de los siguientes módulos y consumen `SearchResult`.
+- **Módulo 3 (Andrey Lechuga):** Suite automatizada de los 5 escenarios obligatorios (1. Base, 2. Bloqueo dinámico, 3. Inaccesibilidad, 4. Cambio de riesgo antes/después, 5. Camino más corto vs. más conveniente) más el Escenario 6 caza-errores (relajación tardía en vado inundado $R=3$, asimetría direccional de evacuación y validaciones de frontera/diagonal en `cost(u, v)`), almacenando resultados listos para graficar en `ESCENARIOS_PRUEBA` y `HISTORIAL_METRICAS` (Celdas 7–9 de `modelado_terreno.ipynb`).
+
