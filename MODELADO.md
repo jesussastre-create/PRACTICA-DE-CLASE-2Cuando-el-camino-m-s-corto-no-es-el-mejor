@@ -29,3 +29,12 @@ Propiedades: $C(u,v)\ge d(u,v)>0$ (sin aristas negativas → Dijkstra válido; $
 
 ## 4. Respuesta a la pregunta eje
 Dos rutas al mismo refugio se comparan por costo acumulado $J(P)=\sum_{(u,v)\in P}C(u,v)$, no por longitud. Una ruta corta que cruza celdas de nivel 3 paga ~11.4× por paso; por ejemplo, 4 pasos por nivel 3 cuestan ≈ 45.6, mientras que un rodeo seco de 10 pasos cuesta 10. El sistema elige el rodeo. La ruta corta solo gana si el desvío cuesta más que el riesgo evitado; $\alpha$ y $\beta$ controlan ese equilibrio. Si la única ruta está bloqueada, $J=\infty$ y se reporta que no hay camino.
+
+## 5. Algoritmos de búsqueda y heurística (Módulo 2)
+- **Contrato de salida (`SearchResult`):** Estructura estándar con soporte de atributos y diccionario que expone `path: list[Node]`, `cost: float`, `nodes_explored: int` y `visited_order: list[Node]`.
+- **Dijkstra (`dijkstra`):** Búsqueda de costo uniforme ($f(n)=g(n)$) sobre `env.get_neighbors(u)`. Garantiza optimalidad dado que $C(u,v) \ge d(u,v) \ge 1 > 0$.
+- **A* (`a_star`):** Búsqueda informada ($f(n)=g(n)+h(n)$) con heurística admisible y consistente adaptada a `env.allow_diagonal`:
+  - Ortogonal (`allow_diagonal=False`): **Distancia Manhattan** $h(n,g) = \Delta r + \Delta c$.
+  - Diagonal (`allow_diagonal=True`): **Distancia Octile** $h(n,g) = \max(\Delta r, \Delta c) + (\sqrt{2}-1)\min(\Delta r, \Delta c)$ ($\ge$ Euclidiana y $\le$ costo real).
+- **Admisibilidad:** Como $1+\alpha R(v)^\beta \ge 1$ para todo $R(v)\in\{0,1,2,3\}$, se cumple $C(u,v) \ge d(u,v)$ en cada paso y $h(n) \le h^*(n)$ siempre.
+- **Manejo de bloqueos (`-1`):** Si `start` o `goal` están bloqueados (`env.is_blocked`) o el refugio está encerrado por celdas `-1`, ambos algoritmos terminan limpiamente devolviendo `path=[]` y `cost=math.inf`.

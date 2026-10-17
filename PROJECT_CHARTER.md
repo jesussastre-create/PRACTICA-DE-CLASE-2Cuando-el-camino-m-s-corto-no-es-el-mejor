@@ -30,5 +30,6 @@ Respuesta: compara el **costo acumulado** $\sum C(u,v)$ de cada ruta, no su long
 - Soporte a cambios dinámicos del terreno (`set_cell`, `set_region_risk`, `reset`) sin reconstruir el entorno.
 - Heurística de A* admisible respecto a este costo (el costo mínimo por paso es la distancia base, ya que $1+\alpha R^\beta \ge 1$).
 
-## 6. Alcance de este módulo (Jesús)
-`GridEnvironment` + función de costo. Búsqueda, pruebas y visualización son de otros integrantes y consumen `get_neighbors`.
+## 6. Alcance de los módulos implementados
+- **Módulo 1 (Jesús):** `GridEnvironment` + función de costo (Celdas 1–3 de `modelado_terreno.ipynb`).
+- **Módulo 2 (Martín):** Algoritmos `dijkstra` y `a_star`, heurística admisible `heuristic`, estructura `SearchResult` con conteo exacto de `nodes_explored` y `visited_order`, y pruebas de humo de búsqueda (Celdas 4–6 de `modelado_terreno.ipynb`). Pruebas exhaustivas y visualización son de los siguientes módulos y consumen `SearchResult`.
