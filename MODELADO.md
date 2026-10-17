@@ -55,4 +55,10 @@ Se implementaron y verificaron en `modelado_terreno.ipynb` (Celdas 7–9) los **
 ### Correcciones de integración aplicadas en Módulos 1 y 2
 1. **Validación completa en `GridEnvironment.cost(u, v)` (Módulo 1):** Se añadió validación de límites para `u` y `v` (`IndexError`), verificación de bloqueo en el nodo origen `u` (`is_blocked(*u)`), y restricción de movimientos diagonales cuando `allow_diagonal=False` (`ValueError`).
 2. **Compatibilidad extendida en `SearchResult` (Módulo 2):** Se preservó intacto `to_dict()` con las 4 llaves originales de Martín (`path`, `cost`, `nodes_explored`, `visited_order`) y se añadieron propiedades/llaves de compatibilidad (`time_ms`, `found`, `nodes_expanded`, `steps`) para integración directa con los módulos de Visualización (Módulo 4) y Documentación (Módulo 5).
+ 
+## 7. Visualización en Mapas de Calor y Análisis Comparativo (Módulo 4 — Izquierdo)
+Se implementó en `modelado_terreno.ipynb` (Celdas 10–14) la suite visual completa que consume directamente `ESCENARIOS_PRUEBA` y `HISTORIAL_METRICAS`:
+1. **Mapas de calor de terreno (`plot_grid_and_path`):** Cuadrícula categórica con escala visual de riesgo accesible (Bloqueo `-1`, Seco $R=0$, Leve $R=1$, Moderado $R=2$, Severo $R=3$) y superposición vectorial de las rutas calculadas, inicio $\mathbf{S}$ y refugio $\mathbf{G}$. Mosaico $2\times 3$ con los escenarios E1 a E6.
+2. **Demostración gráfica de la Pregunta Eje (Escenario 5):** Superposición simultánea de la ruta corta física (línea roja discontinua, 9 pasos cruzando agua $R=3$, $J=71.35$) contra el rodeo seco óptimo (línea azul continua, 13 pasos por $R=0$, $J=13.00$). Gráfica de barras adjunta que ilustra el ahorro del **81.8%** en costo acumulado.
+3. **Dashboard de métricas (Dijkstra vs $A^*$):** Gráficas de barras comparativas de Nodos Explorados (con etiquetas de reducción de hasta -67.9% en $A^*$), Costos Óptimos idénticos (demostración empírica de admisibilidad) y Tiempos de Ejecución en milisegundos.
 
